@@ -12,6 +12,6 @@ from xmppflask import XmppFlask
 app = XmppFlask('tasman')
 
 
-@app.route(u'test')
-def test():
-    return 'passed'
+@app.route(u'<any(test,тест):msg>')
+def test(msg):
+    return 'passed' if msg == 'test' else u'пассед'
