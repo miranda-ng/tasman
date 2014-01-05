@@ -9,4 +9,7 @@ install:
 	pip install -e ./ -r requirements.txt
 
 test:
-	@python2 tasman/tests/__init__.py
+	@python2 ./tasman/tests/__init__.py
+
+run:
+	@xmppflask ./tasman/app.py:app
