@@ -15,3 +15,8 @@ app = XmppFlask('tasman')
 @app.route(u'<any(test,тест):msg>')
 def test(msg):
     return 'passed' if msg == 'test' else u'пассед'
+
+
+@app.route(u'<any(ping,пинг):msg>')
+def ping(msg):
+    return 'pong' if msg == 'ping' else u'понг'
