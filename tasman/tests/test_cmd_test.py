@@ -34,3 +34,17 @@ class TestCmdTestCase(unittest.TestCase):
 
         rv = app(environ)
         self.assertEquals(list(rv), [])
+
+    def test_passed_groupchat(self):
+        environ = {'xmpp.body': 'test', 'xmpp.jid': JID('chat@xmpp.ru/tasman'),
+                   'xmpp.stanza_type': 'groupchat'}
+
+        rv = app(environ)
+        self.assertEquals(list(rv), ['tasman: passed'])
+
+    def test_passed_groupchat_ru(self):
+        environ = {'xmpp.body': u'тест', 'xmpp.jid': JID('chat@xmpp.ru/tasman'),
+                   'xmpp.stanza_type': 'groupchat'}
+
+        rv = app(environ)
+        self.assertEquals(list(rv), [u'tasman: пассед'])
