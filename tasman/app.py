@@ -10,6 +10,7 @@
 import datetime
 from Queue import Queue, Empty
 from collections import defaultdict
+from xmppflask import JID
 from xmppflask import XmppFlask, request, render_template
 from xmppflask.sessions import MemorySessionInterface
 
@@ -31,9 +32,10 @@ def ping(cmd):
 
 @app.route(u'<any(tell,передать):cmd> <string:nick> <string:message>')
 def tell(cmd, nick, message):
-    if 'mucnick' in request.environ:
-        to_jid = u'%s/%s' % (request.environ['mucroom'], nick)
-        from_jid = request.environ['mucnick']
+    if request.type == 'groupchat':
+        to_jid = JID(request.jid)
+        to_jid.resource = nick
+        from_jid = request.username
     else:
         to_jid = nick
         from_jid = request.environ['xmpp.jid']

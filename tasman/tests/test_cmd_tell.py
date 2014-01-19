@@ -8,6 +8,7 @@
 #
 
 import unittest
+from xmppflask import JID
 from tasman.app import app, MESSAGE_QUEUE
 
 
@@ -18,6 +19,7 @@ class TellCmdTestCase(unittest.TestCase):
     def test_tell(self):
         environ = {'xmpp.body': 'tell foo boo!',
                    'xmpp.jid': 'tasman@xmpp.ru',
+                   'xmpp.stanza_type': 'chat',
                    'xmpp.timestamp': 1234567890}
 
         rv = app(environ)
@@ -31,6 +33,7 @@ class TellCmdTestCase(unittest.TestCase):
     def test_tell_ru(self):
         environ = {'xmpp.body': u'передать foo boo!',
                    'xmpp.jid': 'tasman@xmpp.ru',
+                   'xmpp.stanza_type': 'chat',
                    'xmpp.timestamp': 1234567890}
 
         rv = app(environ)
@@ -44,9 +47,8 @@ class TellCmdTestCase(unittest.TestCase):
 
     def test_tell_in_muc(self):
         environ = {'xmpp.body': 'tell foo boo!',
-                   'mucnick': 'tasman',
-                   'mucroom': 'xmppflask@conference.jabber.org',
-                   'xmpp.jid': 'xmppflask@conference.jabber.org/tasman',
+                   'xmpp.stanza_type': 'groupchat',
+                   'xmpp.jid': JID('xmppflask@conference.jabber.org/tasman'),
                    'xmpp.timestamp': 1234567890}
 
         rv = app(environ)
