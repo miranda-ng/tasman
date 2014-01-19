@@ -1,2 +1,2 @@
-hg+https://bitbucket.org/kxepal/xmppflask
+hg+https://bitbucket.org/xmppflask/xmppflask
 sleekxmpp
