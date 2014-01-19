@@ -14,13 +14,13 @@ from tasman.app import app
 class PingCmdTestCase(unittest.TestCase):
 
     def test_ping(self):
-        environ = {'MESSAGE': 'ping', 'XMPP_JID': 'k.bx@ya.ru'}
+        environ = {'xmpp.body': 'ping', 'xmpp.jid': 'tasman@xmpp.ru'}
 
         rv = app(environ)
         self.assertEquals(list(rv), ['pong'])
 
     def test_ping_ru(self):
-        environ = {'MESSAGE': u'пинг', 'XMPP_JID': 'k.bx@ya.ru'}
+        environ = {'xmpp.body': u'пинг', 'xmpp.jid': 'tasman@xmpp.ru'}
 
         rv = app(environ)
         self.assertEquals(list(rv), [u'понг'])

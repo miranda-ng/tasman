@@ -36,9 +36,9 @@ def tell(cmd, nick, message):
         from_jid = request.environ['mucnick']
     else:
         to_jid = nick
-        from_jid = request.environ['XMPP_JID']
+        from_jid = request.environ['xmpp.jid']
 
-    ts = datetime.datetime.utcfromtimestamp(request.environ['XMPP_TIMESTAMP'])
+    ts = datetime.datetime.utcfromtimestamp(request.environ['xmpp.timestamp'])
     MESSAGE_QUEUE[to_jid].put((
         'message',
         {'to': to_jid, 'body': '[%sZ] %s: %s' % (ts, from_jid, message)}
@@ -52,12 +52,11 @@ def tell(cmd, nick, message):
 
 @app.route_presence(type='available')
 def dispatch_queue():
-    environ = request.environ
-    if environ['XMPP_JID'] not in MESSAGE_QUEUE:
+    if request.jid not in MESSAGE_QUEUE:
         return
 
     def flush():
-        queue = MESSAGE_QUEUE[environ['XMPP_JID']]
+        queue = MESSAGE_QUEUE[request.jid]
         while True:
             try:
                 cmd, payload = queue.get(block=False)
