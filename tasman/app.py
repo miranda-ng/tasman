@@ -8,6 +8,7 @@
 #
 
 import datetime
+from copy import copy
 from Queue import Queue, Empty
 from collections import defaultdict
 from xmppflask import JID
@@ -65,3 +66,30 @@ def dispatch_queue():
                 yield cmd, payload
 
     return flush()
+
+
+@app.route(u'<any(version,версия):cmd>')
+@app.route(u'<any(version,версия):cmd> <string:user>')
+def version(cmd, user=None):
+    info = None
+
+    if request.type == 'groupchat':
+        if user is None:
+            jid = request.jid
+            user = jid.user
+        else:
+            jid = copy(request.jid)
+            jid.resource = user
+    elif user:
+        info = None
+        user = None
+    else:
+        jid = request.jid
+        user = jid.user
+
+    if user:
+        info = yield 'version', {'jid': jid}
+        if info and not all(info.values()):
+            info = None
+
+    yield render_template('version.html', info=info, user=user)

@@ -1,0 +1,29 @@
+{%- if not user -%}
+
+  {%- if request.view_args.cmd == 'version' -%}
+
+      who's that?
+
+  {%- else -%}
+
+      а это еще кто?
+
+  {%- endif -%}
+
+{%- elif info -%}
+
+    {{ info.name }} {{ info.version }} @ {{ info.os }}
+
+{%- else -%}
+
+  {%- if request.view_args.cmd == 'version' -%}
+
+      seems he's hiding from NSA
+
+  {%- else -%}
+
+      он зашифровался
+
+  {%- endif -%}
+
+{%- endif -%}
