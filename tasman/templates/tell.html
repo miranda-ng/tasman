@@ -1,0 +1,9 @@
+{%- if request.view_args.cmd == 'tell' -%}
+
+I'll pass that onto {{ request.view_args.nick }}
+
+{%- else -%}
+
+ок, как появится {{ request.view_args.nick }} - обязательно передам
+
+{%- endif -%}

@@ -34,7 +34,8 @@ class TellCmdTestCase(unittest.TestCase):
                    'xmpp.timestamp': 1234567890}
 
         rv = app(environ)
-        self.assertEqual(list(rv), [u"ок, передам"])
+        self.assertEqual(list(rv),
+                         [u"ок, как появится foo - обязательно передам"])
         self.assertEqual(
             MESSAGE_QUEUE['foo'].get(),
             ('message',

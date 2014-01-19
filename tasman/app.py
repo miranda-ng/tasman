@@ -10,7 +10,7 @@
 import datetime
 from Queue import Queue, Empty
 from collections import defaultdict
-from xmppflask import XmppFlask, request
+from xmppflask import XmppFlask, request, render_template
 from xmppflask.sessions import MemorySessionInterface
 
 
@@ -19,14 +19,14 @@ app.session_interface = MemorySessionInterface()
 MESSAGE_QUEUE = defaultdict(Queue)
 
 
-@app.route(u'<any(test,тест):msg>')
-def test(msg):
-    return 'passed' if msg == 'test' else u'пассед'
+@app.route(u'<any(test,тест):cmd>')
+def test(cmd):
+    return render_template('test.html')
 
 
-@app.route(u'<any(ping,пинг):msg>')
-def ping(msg):
-    return 'pong' if msg == 'ping' else u'понг'
+@app.route(u'<any(ping,пинг):cmd>')
+def ping(cmd):
+    return render_template('ping.html')
 
 
 @app.route(u'<any(tell,передать):cmd> <string:nick> <string:message>')
@@ -44,10 +44,7 @@ def tell(cmd, nick, message):
         {'to': to_jid, 'body': '[%sZ] %s: %s' % (ts, from_jid, message)}
     ))
 
-    if cmd == 'tell':
-        return "I'll pass that onto %s" % nick
-    elif cmd == u'передать':
-        return u'ок, передам'
+    return render_template('tell.html')
 
 
 @app.route_presence(type='available')
