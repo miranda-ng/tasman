@@ -1,14 +1,20 @@
+{%-
+  set resp = {
+
+    'version': {
+      'no user': "who's that?",
+      "hidden": "seems he's hiding from NSA"
+    },
+    'версия': {
+      'no user': 'а это еще кто?',
+      'hidden': 'он зашифровался'
+    }
+  }
+-%}
+
 {%- if not user -%}
 
-  {%- if request.view_args.cmd == 'version' -%}
-
-      who's that?
-
-  {%- else -%}
-
-      а это еще кто?
-
-  {%- endif -%}
+    {{ resp[request.view_args.cmd]['no user'] }}
 
 {%- elif info -%}
 
@@ -16,14 +22,6 @@
 
 {%- else -%}
 
-  {%- if request.view_args.cmd == 'version' -%}
-
-      seems he's hiding from NSA
-
-  {%- else -%}
-
-      он зашифровался
-
-  {%- endif -%}
+    {{ resp[request.view_args.cmd]['hidden'] }}
 
 {%- endif -%}

@@ -1,19 +1,12 @@
-{%- if request.type == 'groupchat' -%}
+{%-
+  set resp = {
 
-  {% set prefix = request.username + ': ' %}
+    'test': 'passed',
+    'тест': 'пассед'
 
-{%- else -%}
+  }
+-%}
 
-  {% set prefix = '' %}
+{%- set prefix = (request.username + ': ') if request.type == 'groupchat' else '' -%}
 
-{%- endif -%}
-
-{%- if request.view_args.cmd == 'test' -%}
-
-{{ prefix }}passed
-
-{%- else -%}
-
-{{ prefix }}пассед
-
-{%- endif -%}
+{{ prefix }}{{ resp[request.view_args.cmd] }}

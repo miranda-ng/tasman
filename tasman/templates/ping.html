@@ -1,9 +1,10 @@
-{%- if request.view_args.cmd == 'ping' -%}
+{%-
+  set resp = {
 
-pong
+    'ping': 'pong',
+    'пинг': 'понг'
 
-{%- else -%}
+  }
+-%}
 
-понг
-
-{%- endif -%}
+{{ resp[request.view_args.cmd] }}

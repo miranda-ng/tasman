@@ -1,9 +1,10 @@
-{%- if request.view_args.cmd == 'tell' -%}
+{%-
+  set resp = {
 
-I'll pass that onto {{ request.view_args.nick }}
+    'tell': "I'll pass that onto %s",
+    'передать': 'ок, как появится %s - обязательно передам'
 
-{%- else -%}
+  }
+-%}
 
-ок, как появится {{ request.view_args.nick }} - обязательно передам
-
-{%- endif -%}
+{{ resp[request.view_args.cmd] % request.view_args.nick }}
