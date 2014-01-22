@@ -51,6 +51,18 @@ class TestCmdTestCase(unittest.TestCase):
             rv = rv.send(None)
             self.assertEquals(rv, u"seems he's hiding from NSA")
 
+    def test_version_hidden2(self):
+        environ = {'xmpp.body': u'version', 'xmpp.jid': JID('tasman@xmpp.ru'),
+                   'xmpp.stanza_type': 'chat'}
+        info = {'os': '', 'name': '', 'version': ''}
+
+        with app.request_context(environ):
+            rv = app(environ)
+            cmd, payload = rv.next()
+            self.assertEqual(cmd, 'version')
+            rv = rv.send(info)
+            self.assertEquals(rv, u"seems he's hiding from NSA")
+
     def test_version_hidden_ru(self):
         environ = {'xmpp.body': u'версия', 'xmpp.jid': JID('tasman@xmpp.ru'),
                    'xmpp.stanza_type': 'chat'}
@@ -90,3 +102,42 @@ class TestCmdTestCase(unittest.TestCase):
             cmd, payload = rv.next()
             self.assertEqual(cmd, 'version')
             self.assertEqual(payload['jid'], 'chat@xmpp.ru/tasman')
+
+    def test_version_no_name(self):
+        environ = {'xmpp.body': 'version', 'xmpp.jid': JID('tasman@xmpp.ru'),
+                   'xmpp.stanza_type': 'chat'}
+        info = {'os': 'Linux', 'name': '', 'version': '1.0'}
+
+        with app.request_context(environ):
+            rv = app(environ)
+            cmd, payload = rv.next()
+            self.assertEqual(cmd, 'version')
+            rv = rv.send(info)
+            self.assertEquals(rv,
+                              u'[no name] {version} @ {os}'.format(**info))
+
+    def test_version_no_ver(self):
+        environ = {'xmpp.body': 'version', 'xmpp.jid': JID('tasman@xmpp.ru'),
+                   'xmpp.stanza_type': 'chat'}
+        info = {'os': 'Linux', 'name': '', 'version': ''}
+
+        with app.request_context(environ):
+            rv = app(environ)
+            cmd, payload = rv.next()
+            self.assertEqual(cmd, 'version')
+            rv = rv.send(info)
+            self.assertEquals(rv,
+                              u'[no name] [no ver] @ {os}'.format(**info))
+
+    def test_version_no_os(self):
+        environ = {'xmpp.body': 'version', 'xmpp.jid': JID('tasman@xmpp.ru'),
+                   'xmpp.stanza_type': 'chat'}
+        info = {'os': '', 'name': 'xmppflask', 'version': '1.0'}
+
+        with app.request_context(environ):
+            rv = app(environ)
+            cmd, payload = rv.next()
+            self.assertEqual(cmd, 'version')
+            rv = rv.send(info)
+            self.assertEquals(rv,
+                              u'{name} {version} @ [no os]'.format(**info))

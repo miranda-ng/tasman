@@ -18,7 +18,11 @@
 
 {%- elif info -%}
 
-    {{ info.name }} {{ info.version }} @ {{ info.os }}
+    {{ [info.name|default('[no name]', true),
+        info.version|default('[no ver]', true),
+        '@',
+        info.os|default('[no os]', true)]|join(' ')
+    }}
 
 {%- else -%}
 

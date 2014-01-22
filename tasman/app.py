@@ -89,7 +89,7 @@ def version(cmd, user=None):
 
     if user:
         info = yield 'version', {'jid': jid}
-        if info and not all(info.values()):
+        if info and not any(info.values()):
             info = None
 
     yield render_template('version.html', info=info, user=user)
