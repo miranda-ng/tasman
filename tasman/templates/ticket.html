@@ -1,0 +1,13 @@
+{%- if error -%}
+
+  {{ error }}
+
+{%- else -%}
+
+  {{ request.username }}: [{{ info.status }}] {{ url }} - {{ info.summary }}
+
+{%- endif -%}
+
+
+
+

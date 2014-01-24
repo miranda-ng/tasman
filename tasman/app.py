@@ -8,6 +8,8 @@
 #
 
 import datetime
+import urlparse
+import xmlrpclib
 from copy import copy
 from Queue import Queue, Empty
 from collections import defaultdict
@@ -17,6 +19,7 @@ from xmppflask.sessions import MemorySessionInterface
 
 
 app = XmppFlask('tasman')
+app.config['TRAC_URL'] = 'http://trac.miranda-ng.org/rpc'
 app.session_interface = MemorySessionInterface()
 MESSAGE_QUEUE = defaultdict(Queue)
 
@@ -93,3 +96,21 @@ def version(cmd, user=None):
             info = None
 
     yield render_template('version.html', info=info, user=user)
+
+
+@app.route(u'#<int:idx>', defaults={'cmd': '#'})
+@app.route(u'<any(issue,ticket,bug):cmd> <int:idx>')
+@app.route(u'<any(тикет,баг,проблема):cmd> <int:idx>')
+def ticket(cmd, idx):
+    proxy = xmlrpclib.ServerProxy(app.config['TRAC_URL'])
+    info, error, url = None, None, None
+    try:
+        idx, created_at, changed_at, info = proxy.ticket.get(idx)
+    except xmlrpclib.Fault as err:
+        error = err.faultString
+    else:
+        items = list(urlparse.urlsplit(app.config['TRAC_URL']))
+        items[1] = items[1].split('@')[-1]
+        items[2] = 'ticket/%d' % idx
+        url = urlparse.urlunsplit(items)
+    return render_template('ticket.html', info=info, error=error, url=url)
