@@ -11,13 +11,17 @@ import datetime
 import time
 import urlparse
 import xmlrpclib
-import pysvn
 from copy import copy
 from Queue import Queue, Empty
 from collections import defaultdict
 from xmppflask import JID
 from xmppflask import XmppFlask, request, render_template
 from xmppflask.sessions import MemorySessionInterface
+
+try:
+    import pysvn
+except ImportError:
+    pysvn = None
 
 
 app = XmppFlask('tasman')
@@ -125,6 +129,9 @@ def ticket(cmd, idx):
 @app.route(u'<any(rev,revision,commit):cmd> <int:rev>')
 @app.route(u'<any(рев,ревизия,коммит):cmd> <int:rev>')
 def revision(cmd, rev):
+    if pysvn is None:
+        app.logger.error('pysvn package not found')
+        return
     res, err = None, None
     try:
         log = svn.log(app.config['SVN_REPO_URL'],
