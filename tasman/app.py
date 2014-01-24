@@ -8,8 +8,10 @@
 #
 
 import datetime
+import time
 import urlparse
 import xmlrpclib
+import pysvn
 from copy import copy
 from Queue import Queue, Empty
 from collections import defaultdict
@@ -20,8 +22,11 @@ from xmppflask.sessions import MemorySessionInterface
 
 app = XmppFlask('tasman')
 app.config['TRAC_URL'] = 'http://trac.miranda-ng.org/rpc'
+app.config['SVN_REPO_URL'] = 'http://svn.miranda-ng.org/main'
+app.config['SVN_REV_URL'] = 'http://trac.miranda-ng.org/changeset/%d'
 app.session_interface = MemorySessionInterface()
 MESSAGE_QUEUE = defaultdict(Queue)
+svn = pysvn.Client()
 
 
 @app.route(u'<any(test,тест):cmd>')
@@ -114,3 +119,29 @@ def ticket(cmd, idx):
         items[2] = 'ticket/%d' % idx
         url = urlparse.urlunsplit(items)
     return render_template('ticket.html', info=info, error=error, url=url)
+
+
+@app.route(u'r<int:rev>', defaults={'cmd': 'r'})
+@app.route(u'<any(rev,revision,commit):cmd> <int:rev>')
+@app.route(u'<any(рев,ревизия,коммит):cmd> <int:rev>')
+def revision(cmd, rev):
+    res, err = None, None
+    try:
+        log = svn.log(app.config['SVN_REPO_URL'],
+                      revision_start=pysvn.Revision(
+                          pysvn.opt_revision_kind.number, rev),
+                      limit=1)
+    except pysvn.ClientError:
+        err = 'No such revision %s' % rev
+    else:
+        if not log:
+            err = 'No such revision %s' % rev
+        else:
+            offset = int(time.time()) - int(time.mktime(time.gmtime()))
+            res = dict(log[0].items())
+            res['revision'] = res['revision'].number
+            res['url'] = app.config['SVN_REV_URL'] % res['revision']
+            res['date'] = datetime.datetime.fromtimestamp(
+                int(res['date']) - offset).isoformat(sep=' ') + 'Z'
+
+    return render_template('revision.html', info=res, error=err)
