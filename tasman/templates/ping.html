@@ -1,10 +1,10 @@
 {%-
   set resp = {
 
-    'ping': 'pong',
-    'пинг': 'понг'
+    'en': 'pong',
+    'ru': 'понг'
 
   }
 -%}
 
-{{ resp[request.view_args.cmd] }}
+{{ resp[request.view_args.lang] }}

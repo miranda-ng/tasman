@@ -1,11 +1,11 @@
 {%-
   set resp = {
 
-    'version': {
+    'en': {
       'no user': "who's that?",
       "hidden": "seems he's hiding from NSA"
     },
-    'версия': {
+    'ru': {
       'no user': 'а это еще кто?',
       'hidden': 'он зашифровался'
     }
@@ -14,7 +14,7 @@
 
 {%- if not user -%}
 
-    {{ resp[request.view_args.cmd]['no user'] }}
+    {{ resp[request.view_args.lang]['no user'] }}
 
 {%- elif info -%}
 
@@ -26,6 +26,6 @@
 
 {%- else -%}
 
-    {{ resp[request.view_args.cmd]['hidden'] }}
+    {{ resp[request.view_args.lang]['hidden'] }}
 
 {%- endif -%}

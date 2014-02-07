@@ -33,18 +33,24 @@ MESSAGE_QUEUE = defaultdict(Queue)
 svn = pysvn.Client()
 
 
-@app.route(u'<any(test,тест):cmd>')
-def test(cmd):
+@app.route(u'test', defaults={'lang': 'en'})
+@app.route(u'тест', defaults={'lang': 'ru'})
+def test(**kwargs):
+    """Simple test command"""
     return render_template('test.html')
 
 
-@app.route(u'<any(ping,пинг):cmd>')
-def ping(cmd):
+@app.route(u'ping', defaults={'lang': 'en'})
+@app.route(u'пинг', defaults={'lang': 'ru'})
+def ping(**kwargs):
+    """Not implemented right yet"""
     return render_template('ping.html')
 
 
-@app.route(u'<any(tell,передать):cmd> <string:nick> <string:message>')
-def tell(cmd, nick, message):
+@app.route(u'tell <string:nick> <string:message>', defaults={'lang': 'en'})
+@app.route(u'передать <string:nick> <string:message>', defaults={'lang': 'ru'})
+def tell(nick, message, **kwargs):
+    """Sends to the specified user the message when he becomes available"""
     if request.type == 'groupchat':
         to_jid = JID(request.jid)
         to_jid.resource = nick
@@ -80,9 +86,12 @@ def dispatch_queue():
     return flush()
 
 
-@app.route(u'<any(version,версия):cmd>')
-@app.route(u'<any(version,версия):cmd> <string:user>')
-def version(cmd, user=None):
+@app.route(u'version', defaults={'lang': 'en'})
+@app.route(u'версия', defaults={'lang': 'ru'})
+@app.route(u'version <string:user>', defaults={'lang': 'en'})
+@app.route(u'версия <string:user>', defaults={'lang': 'ru'})
+def version(user=None, **kwargs):
+    """Returns the user version info (XEP-0092)"""
     info = None
 
     if request.type == 'groupchat':

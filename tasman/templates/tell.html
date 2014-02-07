@@ -1,10 +1,10 @@
 {%-
   set resp = {
 
-    'tell': "I'll pass that onto %s",
-    'передать': 'ок, как появится %s - обязательно передам'
+    'en': "I'll pass that onto %s",
+    'ru': 'ок, как появится %s - обязательно передам'
 
   }
 -%}
 
-{{ resp[request.view_args.cmd] % request.view_args.nick }}
+{{ resp[request.view_args.lang] % request.view_args.nick }}
