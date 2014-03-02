@@ -17,7 +17,7 @@ Before you start install **git, hg, virtualenv, setuptools**
 5) make install
 
 ### Configuration
-After configuration, you will be asked about JID and it's password for your bot.
+After installation you will be promted for JID and password for your bot.
 
 ### Commands
 
