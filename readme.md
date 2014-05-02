@@ -1,8 +1,8 @@
-# About
+### About
 
 XMPP bot for Miranda NG conference based on XmppFlask
 
-# Installation
+### Installation
 
 Before you start install **git, hg, virtualenv, setuptools**
 
@@ -16,5 +16,23 @@ Before you start install **git, hg, virtualenv, setuptools**
 
 5) make install
 
-# Configuration
-After configuration, you will be asked about JID and it's password for your bot.
+### Configuration
+After installation you will be promted for JID and password for your bot.
+
+### Commands
+
+One command per line. Aliases are comma-separated.
+
+**test, тест**
+
+**ping, пинг**
+
+**tell** *your msg here*, **передать** *текст сообщения*
+
+**version, версия**
+
+**version** *username*, **версия** *username*
+
+**issue, ticket, bug, тикет, баг, проблема** *1234*– prints a ticket from Track
+
+**rev, revision, commit, рев, ревизия, коммит** – prints bot's revision
