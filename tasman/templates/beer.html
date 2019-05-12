@@ -1,0 +1,23 @@
+{%-
+  set resp = {
+
+    'en': ['poured a mug of beer for %s'],
+    'ru': [
+      '/me протянул %s кружку пива',
+      '/me протянул %s две кружки пива. тыж осилишь, да?',
+      '/me налил %s кружку темного пива',
+      'пива нет, %s, держи квас!',
+      '/me открыл баночку безалкогольного для %s. тебе еще домой ехать!',
+      '/me открыл баночку безалкогольного для %s. тебе еще миранду пилить!!'
+    ]
+  }
+-%}
+
+{%- if request.view_args.nick|lower in ['всем', 'всем!'] -%}
+/me выкатил бочку пива для всех!
+{%- elif request.view_args.nick|lower in ['all', 'all!' 'everyone', 'everyone!'] -%}
+beer, everyone!
+{%- else -%}
+{{ resp[request.view_args.lang]|random % request.view_args.nick }}
+{%- endif -%}
+

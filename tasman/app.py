@@ -18,19 +18,12 @@ from xmppflask import JID
 from xmppflask import XmppFlask, request, render_template
 from xmppflask.sessions import MemorySessionInterface
 
-try:
-    import pysvn
-except ImportError:
-    pysvn = None
-
-
 app = XmppFlask('tasman')
 app.config['TRAC_URL'] = 'http://trac.miranda-ng.org/rpc'
 app.config['SVN_REPO_URL'] = 'http://svn.miranda-ng.org/main'
 app.config['SVN_REV_URL'] = 'http://trac.miranda-ng.org/changeset/%d'
 app.session_interface = MemorySessionInterface()
 MESSAGE_QUEUE = defaultdict(Queue)
-svn = pysvn.Client()
 
 
 @app.route(u'test', defaults={'lang': 'en'})
@@ -116,48 +109,20 @@ def version(user=None, **kwargs):
     yield render_template('version.html', info=info, user=user)
 
 
-@app.route(u'#<int:idx>', defaults={'cmd': '#'})
-@app.route(u'<any(issue,ticket,bug):cmd> <int:idx>')
-@app.route(u'<any(тикет,баг,проблема):cmd> <int:idx>')
-def ticket(cmd, idx):
-    proxy = xmlrpclib.ServerProxy(app.config['TRAC_URL'])
-    info, error, url = None, None, None
-    try:
-        idx, created_at, changed_at, info = proxy.ticket.get(idx)
-    except xmlrpclib.Fault as err:
-        error = err.faultString
-    else:
-        items = list(urlparse.urlsplit(app.config['TRAC_URL']))
-        items[1] = items[1].split('@')[-1]
-        items[2] = 'ticket/%d' % idx
-        url = urlparse.urlunsplit(items)
-    return render_template('ticket.html', info=info, error=error, url=url)
+@app.route('join <room> as <nick>')
+def join(room, nick=None):
+    yield 'join_room', {
+        'room': room,
+        'nick': nick or request.app_jid.user
+    }
+    yield 'ok'
 
 
-@app.route(u'r<int:rev>', defaults={'cmd': 'r'})
-@app.route(u'<any(rev,revision,commit):cmd> <int:rev>')
-@app.route(u'<any(рев,ревизия,коммит):cmd> <int:rev>')
-def revision(cmd, rev):
-    if pysvn is None:
-        app.logger.error('pysvn package not found')
-        return
-    res, err = None, None
-    try:
-        log = svn.log(app.config['SVN_REPO_URL'],
-                      revision_start=pysvn.Revision(
-                          pysvn.opt_revision_kind.number, rev),
-                      limit=1)
-    except pysvn.ClientError:
-        err = 'No such revision %s' % rev
-    else:
-        if not log:
-            err = 'No such revision %s' % rev
-        else:
-            offset = int(time.time()) - int(time.mktime(time.gmtime()))
-            res = dict(log[0].items())
-            res['revision'] = res['revision'].number
-            res['url'] = app.config['SVN_REV_URL'] % res['revision']
-            res['date'] = datetime.datetime.fromtimestamp(
-                int(res['date']) - offset).isoformat(sep=' ') + 'Z'
+@app.route(u'<any(beer):cmd> <string:nick>', defaults={'lang': 'en'})
+@app.route(u'<any(пива,пиво):cmd> <string:nick>', defaults={'lang': 'ru'})
+def beer(cmd, nick, lang):
+    return render_template('beer.html')
 
-    return render_template('revision.html', info=res, error=err)
+if __name__ == '__main__':
+    app.run('pydroid@xmpp.ru', 'RobotsShallRule!', 'sleekxmpp')
+
